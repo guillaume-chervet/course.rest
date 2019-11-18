@@ -26,7 +26,7 @@ const service = {
     }
 };  
 
-var xml = fs.readFileSync('./Sources/wscalc1.wsdl', 'utf8');
+var xml = fs.readFileSync('./src/wscalc1.wsdl', 'utf8');
 
 const server = http.createServer(function (request, response) {
     response.end('404: Not Found: ' + request.url);
