@@ -14,3 +14,8 @@ results
 
 node_modules
 npm-debug.log
+**/uploads/*
+.vscode/**
+
+coverage
+.sonarlint

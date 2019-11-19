@@ -1,0 +1,51 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Api Rest",
+		"_postman_id": "0ca8c986-570b-9207-dc86-52e639888087",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/api/places",
+			"request": {
+				"url": "http://localhost:8081/api/places",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n      \"name\": \"Londre\",\n      \"author\": \"Patrick\",\n      \"review\": 2,\n      \"image\": null\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/places/2",
+			"request": {
+				"url": "http://localhost:8081/api/places/2",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
