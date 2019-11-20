@@ -1,10 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const Places = require('./places/controller');
 const packageJson = require('../package.json');
 
 class App {
-    constructor(placeData) {
+    constructor(place) {
         const app = express();
 
         app.use(bodyParser.urlencoded({
@@ -23,7 +22,7 @@ class App {
         };
         app.use(middlewareHttp);
 
-        new Places(app, placeData);
+        place.configure(app);
 
         app.get('/api/version', function (request, response) {
             response.json({

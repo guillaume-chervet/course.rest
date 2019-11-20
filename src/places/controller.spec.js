@@ -2,10 +2,11 @@ const request = require("supertest");
 const assert = require("assert");
 const App = require("../app");
 const PlaceData = require("./data");
+const Place = require("./controller");
 
 describe("Places/controller", () => {
   it("GET /api/places/2 should respond a http 200 OK", () => {
-    const app = new App(new PlaceData()).app;
+    const app = new App(new Place(new PlaceData())).app;
     return request(app)
       .get("/api/places/2")
       .expect("Content-Type", /json/)
@@ -16,7 +17,7 @@ describe("Places/controller", () => {
   });
 
   it("GET /api/places/youhou should respond a http 404", () => {
-    const app = new App(new PlaceData()).app;
+    const app = new App(new Place(new PlaceData())).app;
     return request(app)
       .get("/api/places/youhou")
       .expect("Content-Type", /json/)
@@ -35,7 +36,7 @@ describe("Places/controller", () => {
             review: 2,
             image: null
         };
-        const app = (new App(new PlaceData())).app; 
+        const app = new App(new Place(new PlaceData())).app;
         return request(app)
             .post('/api/places')
             .send(newPlace)
@@ -54,7 +55,7 @@ describe("Places/controller", () => {
                 title: 'bworld place'
             }
         };
-        const app = (new App(new PlaceData())).app; 
+        const app = new App(new Place(new PlaceData())).app;
         return request(app)
             .post('/api/places')
             .send(newPlace)
@@ -71,7 +72,7 @@ describe("Places/controller", () => {
             review: 2,
             image: null
         };
-        const app = (new App(new PlaceData())).app; 
+        const app = new App(new Place(new PlaceData())).app;
         return request(app)
             .post('/api/places')
             .send(newPlace)
@@ -82,7 +83,7 @@ describe("Places/controller", () => {
 
     it('POST /api/places should respond a http 400 KO', () => {
 
-        const app = (new App(new PlaceData())).app; 
+        const app = new App(new Place(new PlaceData())).app;
         var newPlace = {
             name: 'Londre &',
             author: 'Patrickmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',

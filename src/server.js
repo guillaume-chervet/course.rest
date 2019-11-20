@@ -1,8 +1,9 @@
 const App = require("./app");
 
 const PlaceData = require("./places/data");
-
-const app = new App(new PlaceData()).app;
+const Places = require("./places/controller");
+const places = new Places(new PlaceData());
+const app = new App(places).app;
 
 var server = app.listen(8081, function() {
   var host = server.address().address;
