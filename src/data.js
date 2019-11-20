@@ -75,8 +75,7 @@ class Data {
       } else {
         return false;
       }
-      return _self
-        ._saveAsync(
+      return _self._saveAsync(
           {
             places
           },

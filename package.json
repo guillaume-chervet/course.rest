@@ -8,19 +8,13 @@
     "npm": "3.10.8"
   },
   "scripts": {
-    "lint": "\".\\node_modules\\.bin\\eslint\" ./src/**/*.js",
-    "lint:watch": "watch \"npm run lint\" ./src",
-    "test": "mocha --require ./configureMocha.js ./src/**/*.spec.js",
-    "test:watch": "mocha --watch --require ./configureMocha.js ./src/**/*.spec.js",
+    "test": "jest --watchAll --coverage",
     "server": "node ./src/server.js",
-    "start": "nodemon ./src/server.js",
-    "build": "npm run lint && npm run server",
-    "build:watch": "parallelshell \"npm run server:watch\" \"npm run lint:watch\""
+    "start": "nodemon ./src/server.js"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
-    "chalk": "^2.4.2",
     "express": "^4.13.0",
     "express-fileupload": "^0.1.2",
     "express-graphql": "^0.7.1",
@@ -32,17 +26,10 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "cross-env": "^3.1.4",
-    "eslint": "latest",
-    "istanbul": "^0.4.5",
-    "mocha": "latest",
-    "mockery": "^2.0.0",
-    "nodemon": "latest",
-    "parallelshell": "^2.0.0",
-    "sinon": "^1.17.6",
-    "sinon-bluebird": "^3.1.0",
-    "sinon-chai": "^2.8.0",
-    "supertest": "^3.0.0",
+    "eslint": "^5.16.0",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.0",
+    "supertest": "^4.0.2",
     "watch": "latest"
   },
   "main": "src/server.js",
