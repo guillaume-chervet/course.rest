@@ -4,7 +4,7 @@ const path = require("path");
 
 class Files {
   constructor() {}
-  configure() {
+  configure(app) {
     app.use(fileUpload());
 
     app.post("/api/files", (request, response) => {

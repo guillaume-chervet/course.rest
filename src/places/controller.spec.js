@@ -1,12 +1,12 @@
 const request = require("supertest");
 const assert = require("assert");
 const App = require("../app");
-const PlaceData = require("./data");
-const Place = require("./controller");
+const Places = require("./controller");
+const Data = require("./data");
 
 describe("Places/controller", () => {
   it("GET /api/places/2 should respond a http 200 OK", () => {
-    const app = new App(new Place(new PlaceData())).app;
+    const app = new App(new Places(new Data())).app;
     return request(app)
       .get("/api/places/2")
       .expect("Content-Type", /json/)
@@ -17,87 +17,123 @@ describe("Places/controller", () => {
   });
 
   it("GET /api/places/youhou should respond a http 404", () => {
-    const app = new App(new Place(new PlaceData())).app;
+    const app = new App(new Places(new Data())).app;
     return request(app)
       .get("/api/places/youhou")
       .expect("Content-Type", /json/)
       .expect(404)
-      .expect(response => {
+      .then(response => {
         assert.equal(response.body.key, "entity.not.found");
       });
   });
 
-  //TODO Ajouter ici le test qui vérifie le nombre de place remonté par l'api
+  it("POST /api/places should respond a http 201 OK with no image", () => {
+    var newPlace = {
+      name: "Londre",
+      author: "Patrick",
+      review: 2
+    };
+    const app = new App(new Places(new Data())).app;
+    return request(app)
+      .post("/api/places")
+      .send(newPlace)
+      .expect("Location", /places/)
+      .expect(201);
+  });
 
-  /*it('POST /api/places should respond a http 201 OK with no image', () => {
-        var newPlace = {
-            name: 'Londre',
-            author: 'Patrick',
-            review: 2,
-            image: null
-        };
-        const app = new App(new Place(new PlaceData())).app;
-        return request(app)
-            .post('/api/places')
-            .send(newPlace)
-            .expect('Location', /places/)
-            .expect(201);
-    });
+  it("POST /api/places should respond a http 201 OK with an image", () => {
+    var newPlace = {
+      name: "Londre",
+      author: "Patrick",
+      review: 2,
+      image: {
+        url:
+          "https://www.bworld.fr/api/file/get/c27e39ee-7ba9-46f8-aa7c-9e334c72a96c/d9d0634b-b1a0-42bd-843d-d3bc3cf7d842/ImageThumb/bworld-2016-v3.png",
+        title: "bworld place"
+      }
+    };
+    const app = new App(new Places(new Data())).app;
+    return request(app)
+      .post("/api/places")
+      .send(newPlace)
+      .expect("Location", /places/)
+      .expect(201);
+  });
 
-    it('POST /api/places should respond a http 201 OK with an image', () => {
+  it("POST /api/places should respond a http 400 KO", () => {
+    var newPlace = {
+      name: "",
+      author: "Pat",
+      review: 2
+    };
+    const app = new App(new Places(new Data())).app;
+    return request(app)
+      .post("/api/places")
+      .send(newPlace)
+      .expect("Content-Type", /json/)
+      .expect(400);
+  });
 
-        var newPlace = {
-            name: 'Londre',
-            author: 'Patrick',
+  it("POST /api/places should respond a http 400 KO", () => {
+    const app = new App(new Places(new Data())).app;
+    var newPlace = {
+      name: "Londre &",
+      author:
+        "Patrickmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      review: 2,
+      image: {
+        url:
+          "https://www.bworld.fr/api/file/get/c27e39ee-7ba9-46f8-aa7c-9e334c72a96c/d9d0634b-b1a0-42bd-843d-d3bc3cf7d842/ImageThumb/bworld-2016-v3.png",
+        title: ""
+      }
+    };
+    return request(app)
+      .post("/api/places")
+      .send(newPlace)
+      .expect("Content-Type", /json/)
+      .expect(400);
+  });
+
+  it("GET /api/places should respond a http 200 OK", () => {
+    const app = new App(new Places(new Data())).app;
+    return request(app)
+      .get("/api/places")
+      .expect("Content-Type", /json/)
+      .expect(200);
+  });
+
+  it("DELETE /api/places/3 should respond a http 200 OK", () => {
+    const app = new App().app;
+    var promise = request(app)
+      .delete("/api/places")
+      .expect("Content-Type", /json/)
+      .expect(200);
+
+    /*promise.then(function () {
+            return request(app)
+                .delete('/api/places')
+                .expect('Content-Type', /json/)
+                .expect(404);
+        });*/
+    return promise;
+  });
+
+  /*   it('PUT /api/places/3 should respond a http 204 OK', () => {
+        const app = require('../app');
+        var placeToUpdate = {
+            id: '3',
+            name: 'Londres nord',
+            author: 'Patrick2',
             review: 2,
             image: {
                 url: 'https://www.bworld.fr/api/file/get/c27e39ee-7ba9-46f8-aa7c-9e334c72a96c/d9d0634b-b1a0-42bd-843d-d3bc3cf7d842/ImageThumb/bworld-2016-v3.png',
                 title: 'bworld place'
             }
         };
-        const app = new App(new Place(new PlaceData())).app;
         return request(app)
-            .post('/api/places')
-            .send(newPlace)
-            .expect('Location', /places/)
-            .expect(201);
-
-    });
-
-    it('POST /api/places should respond a http 400 KO', () => {
-
-        var newPlace = {
-            name: '',
-            author: 'Pat',
-            review: 2,
-            image: null
-        };
-        const app = new App(new Place(new PlaceData())).app;
-        return request(app)
-            .post('/api/places')
-            .send(newPlace)
+            .put('/api/places/3')
+            .send(placeToUpdate)
             .expect('Content-Type', /json/)
-            .expect(400);
-
-    });
-
-    it('POST /api/places should respond a http 400 KO', () => {
-
-        const app = new App(new Place(new PlaceData())).app;
-        var newPlace = {
-            name: 'Londre &',
-            author: 'Patrickmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',
-            review: 2,
-            image: {
-                url: 'https://www.bworld.fr/api/file/get/c27e39ee-7ba9-46f8-aa7c-9e334c72a96c/d9d0634b-b1a0-42bd-843d-d3bc3cf7d842/ImageThumb/bworld-2016-v3.png',
-                title: ''
-            }
-        };
-        return request(app)
-            .post('/api/places')
-            .send(newPlace)
-            .expect('Content-Type', /json/)
-            .expect(400);
-
+            .expect(204);
     });*/
 });
