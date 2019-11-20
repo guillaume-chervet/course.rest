@@ -33,8 +33,7 @@ describe("Places/controller", () => {
         var newPlace = {
             name: 'Londre',
             author: 'Patrick',
-            review: 2,
-            image: null
+            review: 2
         };
         const app = new App(new Place(new PlaceData())).app;
         return request(app)
@@ -69,8 +68,7 @@ describe("Places/controller", () => {
         var newPlace = {
             name: '',
             author: 'Pat',
-            review: 2,
-            image: null
+            review: 2
         };
         const app = new App(new Place(new PlaceData())).app;
         return request(app)
