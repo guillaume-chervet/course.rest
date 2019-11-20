@@ -74,26 +74,6 @@ class App {
       response.json(index);
     });
 
-    app.get("/api/jsonld", function(request, response) {
-      const jsonLd = {
-        id: "1",
-        name: "Londre",
-        review: 2,
-        image: {
-          link: null
-        },
-        author: {
-          id: "1",
-          link: "http://course-rest.azurewebsites.net/api/user/1"
-        },
-        commments: {
-          link:
-            "http://course-rest.azurewebsites.net/api/comments?reference.id=1&reference.type=place"
-        }
-      };
-      response.json(jsonLd);
-    });
-
     app.get("/api/version", function(request, response) {
       response.json({
         version: packageJson.version
