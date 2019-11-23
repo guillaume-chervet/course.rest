@@ -12,7 +12,7 @@ describe("Places/controller", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .then(response => {
-        assert.equal(response.body.author, "Louis");
+        expect(response.body.author).toBe("Louis");
       });
   });
 
@@ -23,7 +23,7 @@ describe("Places/controller", () => {
       .expect("Content-Type", /json/)
       .expect(404)
       .expect(response => {
-        assert.equal(response.body.key, "entity.not.found");
+        expect(response.body.key).toBe("entity.not.found");
       });
   });
 
