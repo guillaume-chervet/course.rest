@@ -75,13 +75,7 @@ class Data {
       } else {
         return false;
       }
-      return _self._saveAsync(
-          {
-            places
-          },
-          _self._data
-        )
-        .then(() => true);
+      return _self._saveAsync(data, _self._data).then(() => true);
     });
   }
 }
