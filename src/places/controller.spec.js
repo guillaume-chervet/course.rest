@@ -103,18 +103,16 @@ describe("Places/controller", () => {
   });
 
   it("DELETE /api/places/3 should respond a http 200 OK", () => {
-    const app = new App().app;
-    var promise = request(app)
-      .delete("/api/places")
-      .expect("Content-Type", /json/)
-      .expect(200);
+    const app = new App(new Places(new Data())).app;
+    const promise = request(app)
+      .delete("/api/places/3")
+      .expect(204);
 
-    /*promise.then(function () {
-            return request(app)
-                .delete('/api/places')
-                .expect('Content-Type', /json/)
-                .expect(404);
-        });*/
+    promise.then(function() {
+      return request(app)
+        .delete("/api/places")
+        .expect(404);
+    });
     return promise;
   });
 
