@@ -24,7 +24,7 @@ describe("Place/data", () => {
       image: null
     };
     return data.savePlaceAsync(place).then(function(id) {
-      expect(id).toBe("d02ee460-0d45-11ea-a247-8312af632f4f");
+      expect(id).notToBeNull();
     });
   });
 
@@ -37,15 +37,15 @@ describe("Place/data", () => {
       review: 3,
       image: null
     };
-    return data.savePlaceAsync(place).then(function() {
-      expect(true).toBe(true);
+    return data.savePlaceAsync(place).then(function(id) {
+      expect(id).toBe("2");
     });
   });
 
   it("should delete a place then fail to delete it again", () => {
     const data = new Data();
     return data.deletePlaceAsync("3").then(function(success) {
-      expect(true).toBe(true);
+      expect(success).toBe(true);
       return data.deletePlaceAsync("3").then(function(success) {
         expect(success).toBe(false);
       });
