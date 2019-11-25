@@ -102,18 +102,11 @@ describe("Places/controller", () => {
       .expect(200);
   });
 
-  it("DELETE /api/places/3 should respond a http 200 OK", () => {
+  it("DELETE /api/places/3 should respond a http 204 OK", () => {
     const app = new App(new Places(new Data())).app;
-    const promise = request(app)
+    return request(app)
       .delete("/api/places/3")
       .expect(204);
-
-    promise.then(function() {
-      return request(app)
-        .delete("/api/places")
-        .expect(404);
-    });
-    return promise;
   });
 
   /*   it('PUT /api/places/3 should respond a http 204 OK', () => {
