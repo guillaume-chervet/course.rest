@@ -3,6 +3,8 @@ const assert = require("assert");
 const App = require("../app");
 const Places = require("./controller");
 const Data = require("./data");
+const Promise = require('bluebird');
+
 
 describe("Places/controller", () => {
   it("GET /api/places/2 should respond a http 200 OK", () => {
@@ -12,7 +14,7 @@ describe("Places/controller", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .then(response => {
-        assert.equal(response.body.author, "Louis");
+        expect(response.body.author).toBe("Louis");
       });
   });
 
@@ -23,7 +25,7 @@ describe("Places/controller", () => {
       .expect("Content-Type", /json/)
       .expect(404)
       .then(response => {
-        assert.equal(response.body.key, "entity.not.found");
+        expect(response.body.key).toBe("entity.not.found");
       });
   });
 
@@ -142,7 +144,27 @@ describe("Places/controller", () => {
   });
 
     it("PATCH /api/places/2 should respond a http 204 OK", () => {
-        const app = new App(new Places(new Data())).app;
+
+       const data = {
+        getPlaceAsync:jest.fn((id) => {
+          const deferred = Promise.defer();
+          deferred.resolve({
+            "id": "2",
+            "name" : "Lens",
+            "author" : "Louis",
+            "review" : 3,
+            "image":null
+         });
+          return deferred.promise;
+        }),
+        savePlaceAsync:jest.fn(place => {
+          const deferred = Promise.defer();
+          deferred.resolve("2");
+         return deferred.promise;
+        }),
+       };
+
+        const app = new App(new Places(data)).app;
 
         const  patch = [
           { "op": "replace", "path": "/name", "value": "Saint-brieuc" },
@@ -153,7 +175,12 @@ describe("Places/controller", () => {
         .patch("/api/places/2",)
         .send(patch)
         .set('content-type', 'application/json-patch+json')
-        .expect(204);
+        .expect(204)
+        .then(() => {
+          const saveInput = data.savePlaceAsync.mock.calls[0][0];
+          expect(saveInput.name).toBe("Saint-brieuc");
+          expect(saveInput.author).toBe("Robert");
+        });
     });
     
 });
