@@ -11,7 +11,7 @@ class App {
         extended: true
       })
     );
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({ type: ['json', '+json'] }));
 
     var middlewareHttp = function(request, response, next) {
       response.setHeader("Accept", "application/json");

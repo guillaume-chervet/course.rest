@@ -127,4 +127,34 @@ describe("Places/controller", () => {
             .expect('Content-Type', /json/)
             .expect(204);
     });*/
+
+
+    it("PATCH custom /api/places/3 should respond a http 204 OK", () => {
+      const app = new App(new Places(new Data())).app;
+
+      const  patch = {name :"Paris"};
+
+      return request(app)
+      .patch("/api/places/2",)
+      .send(patch)
+      .set('content-type', 'application/json')
+      .expect(204);
+  });
+
+    it("PATCH /api/places/2 should respond a http 204 OK", () => {
+        const app = new App(new Places(new Data())).app;
+
+        const  patch = [
+          { "op": "replace", "path": "/name", "value": "Saint-brieuc" },
+          { "op": "replace", "path": "/author", "value": "Robert" }
+        ];
+
+        return request(app)
+        .patch("/api/places/2",)
+        .send(patch)
+        .set('content-type', 'application/json-patch+json')
+        .expect(204);
+    });
+    
 });
+

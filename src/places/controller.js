@@ -1,4 +1,5 @@
-var validation = require("mw.validation");
+const validation = require("mw.validation");
+const jsonpatch = require('fast-json-patch');
 
 class Places {
   constructor(data) {
@@ -102,7 +103,9 @@ class Places {
     app.put("/api/places/:id", function(request, response) {
       let id = request.params.id;
       console.log(`put /api/places/:id called with id ${id}`);
+
       const newPlace = request.body;
+      
       const onlyIf = function() {
         if (newPlace.image && newPlace.image.url) {
           return true;
@@ -155,85 +158,103 @@ class Places {
       }
 
       return data.getPlaceAsync(id).then(function(place) {
-        if (place === undefined) {
-          response.status(404).json({
-            message: "entity.not.found"
-          });
-          return;
-        }
         data.savePlaceAsync(newPlace).then(function() {
-          response.status(204).json();
+          if (place === undefined) {
+            response.status(201).json();
+          } else {
+            response.status(204).json();
+          }
         });
       });
     });
 
     app.patch("/api/places/:id", function(request, response) {
+
       let id = request.params.id;
       console.log(`patch /api/places/:id called with id ${id}`);
-      const newData = request.body;
-      const onlyIf = function() {
-        if (newData.image && newData.image.url) {
-          return true;
-        }
-        return false;
-      };
-      const rules = {
-        id: [],
-        name: [
-          {
-            minLength: {
-              minLength: 3
-            }
-          },
-          {
-            maxLength: {
-              maxLength: 100
-            }
-          },
-          {
-            pattern: {
-              regex: /^[a-zA-Z -]*$/
-            }
+      if(request.get('content-type') === 'application/json-patch+json') {
+        // Manage json patch
+        const patch = request.body;
+        return data.getPlaceAsync(id).then(function(place) {
+          if (place === undefined) {
+            response.status(404).json({
+              message: "entity.not.found"
+            });
+            return;
           }
-        ],
-        author: ["url"],
-        review: ["digit"],
-        "@image": {
-          url: [],
-          title: [
-            {
-              required: {
-                onlyIf: onlyIf,
-                message: "Field Image title is required"
-              }
-            }
-          ]
-        }
-      };
-      var validationResult = validation.objectValidation.validateModel(
-        newData,
-        rules,
-        true
-      );
-
-      if (!validationResult.success) {
-        response.status(400).json(validationResult.detail);
-        return;
-      }
-
-      return data.getPlaceAsync(id).then(function(place) {
-        if (place === undefined) {
-          response.status(404).json({
-            message: "entity.not.found"
+          const newPlace = jsonpatch.applyPatch(place, patch).newDocument;
+          return data.savePlaceAsync(newPlace).then(function() {
+            response.status(204).json();
           });
-          return;
-        }
-        Object.assign(place, newData);
-        return data.savePlaceAsync(place).then(function() {
-          response.status(204).json();
         });
+
+      } else {     
+          const newData = request.body;
+          const onlyIf = function() {
+            if (newData.image && newData.image.url) {
+              return true;
+            }
+            return false;
+          };
+          const rules = {
+            id: [],
+            name: [
+              {
+                minLength: {
+                  minLength: 3
+                }
+              },
+              {
+                maxLength: {
+                  maxLength: 100
+                }
+              },
+              {
+                pattern: {
+                  regex: /^[a-zA-Z -]*$/
+                }
+              }
+            ],
+            author: ["url"],
+            review: ["digit"],
+            "@image": {
+              url: [],
+              title: [
+                {
+                  required: {
+                    onlyIf: onlyIf,
+                    message: "Field Image title is required"
+                  }
+                }
+              ]
+            }
+          };
+          var validationResult = validation.objectValidation.validateModel(
+            newData,
+            rules,
+            true
+          );
+
+          if (!validationResult.success) {
+            response.status(400).json(validationResult.detail);
+            return;
+          }
+
+          return data.getPlaceAsync(id).then(function(place) {
+            if (place === undefined) {
+              response.status(404).json({
+                message: "entity.not.found"
+              });
+              return;
+            }
+            Object.assign(place, newData);
+            return data.savePlaceAsync(place).then(function() {
+              response.status(204).json();
+            });
+          });
+        }
       });
-    });
+      
   }
 }
 module.exports = Places;
