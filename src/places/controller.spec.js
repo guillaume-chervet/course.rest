@@ -1,5 +1,4 @@
 const request = require("supertest");
-const assert = require("assert");
 const App = require("../app");
 const PlaceData = require("./data");
 const Place = require("./controller");

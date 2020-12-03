@@ -24,7 +24,7 @@ describe("Place/data", () => {
       image: null
     };
     return data.savePlaceAsync(place).then(function(id) {
-      expect(id).notToBeNull();
+      expect(id).not.toBeUndefined();
     });
   });
 
