@@ -23,7 +23,7 @@ http
     .createServer(function(req, res) {
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         console.log('funciton called');
-        const result = fibonacci(40);
+        const result = fibonacci(42);
         console.log(result);
         res.end();
     })
