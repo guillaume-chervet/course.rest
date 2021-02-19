@@ -1,6 +1,6 @@
 const Promise = require("bluebird");
 const _ = require("lodash");
-const uuidV1 = require("uuid");
+const { v1: uuidv1 } = require("uuid");
 const jsonData = require("./data.json");
 
 const cloneJsonData = _.cloneDeep(jsonData);
@@ -51,7 +51,7 @@ class Data {
       let id;
       if (!place.id) {
         // insert
-        id = uuidV1();
+        id = uuidv1();
         let newPlace = _.cloneDeep(place);
         newPlace.id = id;
         places.push(newPlace);
