@@ -1,6 +1,6 @@
 const Promise = require("bluebird");
 const _ = require("lodash");
-const uuidV1 = require("uuid/v1");
+const uuidV1 = require("uuid");
 const jsonData = require("./data.json");
 
 const cloneJsonData = _.cloneDeep(jsonData);
