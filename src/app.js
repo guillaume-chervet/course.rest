@@ -3,7 +3,6 @@ const bodyParser = require("body-parser");
 const Places = require("./places/controller");
 const Comments = require("./comments/controller");
 const Graphql = require("./graphql");
-const GraphqlPlaces = require("./places/graphql");
 const Users = require("./users/controller");
 const Data = require("./data");
 const Files = require("./files/controller");
@@ -60,7 +59,7 @@ class App {
     new Users(app, new Data(require("./users/data.json")));
     new Comments(app, new Data(require("./comments/data.json")));
 
-    new Graphql(app);
+    new Graphql(app, placeData);
 
     app.get("/api", function(request, response) {
       const baseUrl = serverUtil.getBaseUrl(request);

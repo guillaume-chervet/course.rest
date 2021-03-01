@@ -1,5 +1,5 @@
 var _ = require('lodash');
-const uuidV1 = require('uuid/v1');
+const { v1: uuidv1 } = require("uuid");
 
 class Data {
   constructor(jsonData) {

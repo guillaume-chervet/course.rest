@@ -78,7 +78,7 @@ class GraphQL {
         return false;
       };
       const rules = {
-        id: ['required'],
+        //id: ['required'],
         name: [
           'required',
           {
