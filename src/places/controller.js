@@ -5,17 +5,14 @@ class Places {
   configure(app) {
     const data = this.data;
 
-    app.get("/api/places/:id", function(request, response) {
+    app.get("/api/places/:id", async (request, response) => {
       let id = request.params.id;
-      return data.getPlaceAsync(id).then(function(place) {
-        if (place !== undefined) {
-          response.status(200).json(place);
-          return;
-        }
-        response.status(404).json({
-          key: "entity.not.found"
-        });
-      });
+      const place = await data.getPlaceAsync(id);
+      if (place !== undefined) {
+        response.status(200).json(place);
+        return;
+      }
+      response.status(404).json({key: "entity.not.found"});
     });
     
   }
