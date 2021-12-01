@@ -1,5 +1,7 @@
-const validation = require("mw.validation");
 const jsonpatch = require('fast-json-patch');
+const Validator = require('jsonschema').Validator;
+
+const regexurl="^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$";
 
 class Places {
   constructor(data) {
@@ -7,251 +9,172 @@ class Places {
   }
   configure(app) {
     const data = this.data;
-    app.get("/api/places", function(request, response) {
-      data.getPlacesAsync().then(function(places) {
-        response.json({
-          places: places
-        });
+    app.get("/api/places", async function(request, response) {
+    const places = await data.getPlacesAsync();
+      response.json({
+        places: places
       });
     });
 
-    app.get("/api/places/:id", function(request, response) {
+    app.get("/api/places/:id", async function(request, response) {
       const id = request.params.id;
-      return data.getPlaceAsync(id).then(function(place) {
-        if (place !== undefined) {
-          response.status(200).json(place);
-          return;
-        }
+      const place = await data.getPlaceAsync(id);
+      if (place !== undefined) {
+        response.status(200).json(place);
+        return;
+      }
+      response.status(404).json({
+        key: "entity.not.found"
+      });
+    });
+
+    app.delete("/api/places/:id", async function(request, response) {
+      const id = request.params.id;
+      const success = await data.deletePlaceAsync(id);
+      if (success) {
+        response.status(204).json();
+      } else {
         response.status(404).json({
-          key: "entity.not.found"
+          message: "entity.not.found"
         });
-      });
+      }
     });
 
-    app.delete("/api/places/:id", function(request, response) {
-      const id = request.params.id;
-      data.deletePlaceAsync(id).then(function(success) {
-        if (success) {
-          response.status(204).json();
-        } else {
-          response.status(404).json({
-            message: "entity.not.found"
-          });
-        }
-      });
-    });
-
-    app.post("/api/places", function(request, response) {
+    app.post("/api/places", async function(request, response) {
       let newPlace = request.body;
 
-      var onlyIf = function() {
-        if (newPlace.image && newPlace.image.url) {
-          return true;
-        }
-        return false;
-      };
-      const rules = {
-        name: [
-          "required",
-          {
-            minLength: {
-              minLength: 3
-            }
+      var placeSchema = {
+        "id": "/Place",
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "object",
+            "properties": {
+              "url": {"type": "string",  "pattern": regexurl},
+              "title": {"type": "string", "minLength": 3, "maxLength": 100}
+            },
+            "required": ["image", "title"]
           },
-          {
-            maxLength: {
-              maxLength: 100
-            }
-          },
-          {
-            pattern: {
-              regex: /^[a-zA-Z -]*$/
-            }
-          }
-        ],
-        author: ["required"],
-        review: ["required", "digit"],
-        "@image": {
-          url: ["url"],
-          title: [
-            {
-              required: {
-                onlyIf: onlyIf,
-                message: "Field Image title is required"
-              }
-            }
-          ]
-        }
+          "author": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'},
+          "review": {"type": "integer", "minimum": 1, "maximum": 9},
+          "name": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'}
+        },
+        "required": ["author", "review", "name"]
       };
-      const validationResult = validation.objectValidation.validateModel(
-        newPlace,
-        rules,
-        true
-      );
 
-      if (!validationResult.success) {
+      var validator = new Validator();
+      var validationResult = validator.validate(newPlace, placeSchema)
+
+      if (validationResult.errors.length > 0) {
         response.status(400).json(validationResult.detail);
         return;
       }
 
-      return data.savePlaceAsync(newPlace).then(function(newId) {
-        response.setHeader("Location", `/api/places/${newId}`);
-        response.status(201).json();
-      });
+      const newId = await data.savePlaceAsync(newPlace);
+      response.setHeader("Location", `/api/places/${newId}`);
+      response.status(201).json();
     });
 
-    app.put("/api/places/:id", function(request, response) {
+    app.put("/api/places/:id", async function(request, response) {
       let id = request.params.id;
       console.log(`put /api/places/:id called with id ${id}`);
 
       const newPlace = request.body;
       
-      const onlyIf = function() {
-        if (newPlace.image && newPlace.image.url) {
-          return true;
-        }
-        return false;
-      };
-      const rules = {
-        id: ["required"],
-        name: [
-          "required",
-          {
-            minLength: {
-              minLength: 3
-            }
+      var placeSchema = {
+        "id": "/Place",
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "object",
+            "properties": {
+              "url": {"type": "string",  "pattern": regexurl},
+              "title": {"type": "string", "minLength": 3, "maxLength": 100}
+            },
+            "required": ["image", "title"]
           },
-          {
-            maxLength: {
-              maxLength: 100
-            }
-          },
-          {
-            pattern: {
-              regex: /^[a-zA-Z -]*$/
-            }
-          }
-        ],
-        author: ["required"],
-        review: ["required", "digit"],
-        "@image": {
-          url: ["url"],
-          title: [
-            {
-              required: {
-                onlyIf: onlyIf,
-                message: "Field Image title is required"
-              }
-            }
-          ]
-        }
+          "author": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'},
+          "review": {"type": "integer", "minimum": 1, "maximum": 9},
+          "name": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'}
+        },
+        "required": ["author", "review", "name"]
       };
-      var validationResult = validation.objectValidation.validateModel(
-        newPlace,
-        rules,
-        true
-      );
 
-      if (!validationResult.success) {
+      var validator = new Validator();
+      var validationResult = validator.validate(newPlace, placeSchema)
+
+      if (validationResult.errors.length > 0) {
         response.status(400).json(validationResult.detail);
         return;
       }
 
-      return data.getPlaceAsync(id).then(function(place) {
-        data.savePlaceAsync(newPlace).then(function() {
-          if (place === undefined) {
-            response.status(201).json();
-          } else {
-            response.status(204).json();
-          }
-        });
-      });
+      const place = await data.getPlaceAsync(id);
+      await data.savePlaceAsync(newPlace);
+      if (place === undefined) {
+        response.status(201).json();
+      } else {
+        response.status(204).json();
+      }
     });
 
-    app.patch("/api/places/:id", function(request, response) {
+    app.patch("/api/places/:id", async function(request, response) {
 
       let id = request.params.id;
       console.log(`patch /api/places/:id called with id ${id}`);
       if(request.get('content-type') === 'application/json-patch+json') {
         // Manage json patch
         const patch = request.body;
-        return data.getPlaceAsync(id).then(function(place) {
+        const place = await data.getPlaceAsync(id);
+        if (place === undefined) {
+          response.status(404).json({
+            message: "entity.not.found"
+          });
+          return;
+        }
+        const newPlace = jsonpatch.applyPatch(place, patch).newDocument;
+        await data.savePlaceAsync(newPlace);
+        response.status(204).json();
+
+      } else {     
+          const newData = request.body
+
+          var placeSchema = {
+            "id": "/Place",
+            "type": "object",
+            "properties": {
+              "image": {
+                "type": "object",
+                "properties": {
+                  "url": {"type": "string",  "pattern": regexurl},
+                  "title": {"type": "string", "minLength": 3, "maxLength": 100}
+                },
+                "required": ["image", "title"]
+              },
+              "author": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'},
+              "review": {"type": "integer", "minimum": 1, "maximum": 1},
+              "name": {"type": "string", "minLength": 3, "maxLength": 100, pattern:'^[a-zA-Z -]*$'}
+            },
+            "required": []
+          };
+
+          var validator = new Validator();
+          var validationResult = validator.validate(newData, placeSchema)
+
+          if (validationResult.errors.length > 0) {
+            response.status(400).json(validationResult.detail);
+            return;
+          }
+
+          const place = await data.getPlaceAsync(id);
           if (place === undefined) {
             response.status(404).json({
               message: "entity.not.found"
             });
             return;
           }
-          const newPlace = jsonpatch.applyPatch(place, patch).newDocument;
-          return data.savePlaceAsync(newPlace).then(function() {
-            response.status(204).json();
-          });
-        });
-
-      } else {     
-          const newData = request.body;
-          const onlyIf = function() {
-            if (newData.image && newData.image.url) {
-              return true;
-            }
-            return false;
-          };
-          const rules = {
-            id: [],
-            name: [
-              {
-                minLength: {
-                  minLength: 3
-                }
-              },
-              {
-                maxLength: {
-                  maxLength: 100
-                }
-              },
-              {
-                pattern: {
-                  regex: /^[a-zA-Z -]*$/
-                }
-              }
-            ],
-            author: ["url"],
-            review: ["digit"],
-            "@image": {
-              url: [],
-              title: [
-                {
-                  required: {
-                    onlyIf: onlyIf,
-                    message: "Field Image title is required"
-                  }
-                }
-              ]
-            }
-          };
-          var validationResult = validation.objectValidation.validateModel(
-            newData,
-            rules,
-            true
-          );
-
-          if (!validationResult.success) {
-            response.status(400).json(validationResult.detail);
-            return;
-          }
-
-          return data.getPlaceAsync(id).then(function(place) {
-            if (place === undefined) {
-              response.status(404).json({
-                message: "entity.not.found"
-              });
-              return;
-            }
-            Object.assign(place, newData);
-            return data.savePlaceAsync(place).then(function() {
-              response.status(204).json();
-            });
-          });
+          Object.assign(place, newData);
+          await data.savePlaceAsync(place);
+          response.status(204).json();
         }
       });
       

@@ -1,9 +1,7 @@
 const request = require("supertest");
-const assert = require("assert");
 const App = require("../app");
 const Places = require("./controller");
 const Data = require("./data");
-const Promise = require('bluebird');
 
 
 describe("Places/controller", () => {
@@ -137,7 +135,7 @@ describe("Places/controller", () => {
       const  patch = {name :"Paris"};
 
       return request(app)
-      .patch("/api/places/2",)
+      .patch("/api/places/2")
       .send(patch)
       .set('content-type', 'application/json')
       .expect(204);
@@ -147,20 +145,22 @@ describe("Places/controller", () => {
 
        const data = {
         getPlaceAsync:jest.fn((id) => {
-          const deferred = Promise.defer();
-          deferred.resolve({
-            "id": "2",
-            "name" : "Lens",
-            "author" : "Louis",
-            "review" : 3,
-            "image":null
-         });
-          return deferred.promise;
+          const promise = new Promise(function(resolve, reject) {
+            resolve({
+              "id": "2",
+              "name" : "Lens",
+              "author" : "Louis",
+              "review" : 3,
+              "image":null
+           });
+          });
+          return promise;
         }),
         savePlaceAsync:jest.fn(place => {
-          const deferred = Promise.defer();
-          deferred.resolve("2");
-         return deferred.promise;
+          const promise = new Promise(function(resolve, reject) {
+            resolve("2");
+          });
+         return promise;
         }),
        };
 

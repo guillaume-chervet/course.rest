@@ -3,30 +3,24 @@
   "description": "README.md",
   "version": "1.0.0",
   "author": "guillaume.chervet",
-  "engines": {
-    "node": "6.10.3",
-    "npm": "3.10.10"
-  },
   "scripts": {
     "test": "jest --watchAll --coverage",
     "server": "node ./src/server.js",
     "start": "nodemon ./src/server.js"
   },
   "dependencies": {
-    "bluebird": "^3.7.1",
     "body-parser": "^1.19.0",
-    "express": "^4.16.4",
-    "fast-json-patch": "^2.1.0",
-    "lodash": "^4.17.11",
+    "express": "^4.17.1",
+    "fast-json-patch": "^3.1.0",
+    "jsonschema": "^1.4.0",
+    "lodash": "^4.17.21",
     "mw.validation": "^1.0.15",
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
-    "jest": "^24.9.0",
-    "nodemon": "^1.19.0",
-    "supertest": "^4.0.2",
-    "watch": "latest"
+    "jest": "^27.4.3",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.1.6"
   },
   "main": "src/server.js",
   "license": "ISC"
