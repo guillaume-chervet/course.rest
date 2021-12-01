@@ -1,4 +1,4 @@
-const uuidV1 = require("uuid/v1");
+const { v4: uuidv1 } = require("uuid");
 const fileUpload = require("express-fileupload");
 const path = require("path");
 

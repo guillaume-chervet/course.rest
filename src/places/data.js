@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { v1: uuidv1 } = require("uuid");
+const { v4: uuidv1 } = require("uuid");
 const jsonData = require("./data.json");
 
 const cloneJsonData = _.cloneDeep(jsonData);
