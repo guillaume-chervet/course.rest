@@ -66,7 +66,7 @@ class Places {
       var validationResult = validator.validate(newPlace, placeSchema)
 
       if (validationResult.errors.length > 0) {
-        response.status(400).json(validationResult.detail);
+        response.status(400).json(validationResult.errors);
         return;
       }
 
@@ -104,7 +104,7 @@ class Places {
       var validationResult = validator.validate(newPlace, placeSchema)
 
       if (validationResult.errors.length > 0) {
-        response.status(400).json(validationResult.detail);
+        response.status(400).json(validationResult.errors);
         return;
       }
 
@@ -161,7 +161,7 @@ class Places {
           var validationResult = validator.validate(newData, placeSchema)
 
           if (validationResult.errors.length > 0) {
-            response.status(400).json(validationResult.detail);
+            response.status(400).json(validationResult.errors);
             return;
           }
 
