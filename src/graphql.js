@@ -1,4 +1,4 @@
-var express_graphql = require('express-graphql');
+var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
 var validation = require('mw.validation');
 
@@ -190,7 +190,7 @@ input FileInput {
 
     app.use(
       '/graphql',
-      express_graphql({
+      graphqlHTTP({
         schema: schema,
         rootValue: root,
         graphiql: true
