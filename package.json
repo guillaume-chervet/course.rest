@@ -5,14 +5,14 @@
   "author": "guillaume.chervet",
   "scripts": {
     "server": "node ./src/server.js",
-    "server:watch": "nodemon ./src/server.js",
+    "server:watch": "nodemon ./src/server.js"
   },
   "dependencies": {
     "express": "^4.13.0",
-    "fast-json-patch": "^2.1.0",
+    "fast-json-patch": "^2.1.0"
   },
   "devDependencies": {
-    "nodemon": "latest",
+    "nodemon": "latest"
   },
   "main": "src/server.js",
   "license": "ISC"
