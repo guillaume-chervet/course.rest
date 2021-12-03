@@ -3,10 +3,6 @@
   "description": "README.md",
   "version": "1.0.0",
   "author": "guillaume.chervet",
-  "engines": {
-    "node": "8.9.4",
-    "npm": "3.10.8"
-  },
   "scripts": {
     "test": "jest --watchAll --coverage",
     "server": "node ./src/server.js",
