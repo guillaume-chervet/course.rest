@@ -23,7 +23,7 @@
     "eslint": "^8.3.0",
     "nodemon": "latest",
     "parallelshell": "^3.0.2",
-    "watch": "latest"
+    "watch": "0.13.0"
   },
   "main": "Sources/server.js",
   "license": "ISC"
