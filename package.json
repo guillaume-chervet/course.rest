@@ -1,30 +1,20 @@
 {
-  "name": "course.rest",
+  "name": "soap",
   "description": "README.md",
   "version": "1.0.0",
   "author": "guillaume.chervet",
   "scripts": {
-    "lint": "eslint ./src/**/*.js",
-    "lint:watch": "watch \"npm run lint\" ./src",
-    "server": "node ./src/serverSoap.js",
-    "server:watch": "nodemon ./src/serverSoap.js",
-    "build": "npm run lint && npm run server",
-    "build:watch": "parallelshell \"npm run server:watch\" \"npm run lint:watch\""
+    "start": "node ./src/serverSoap.js",
+    "start:watch": "nodemon ./src/serverSoap.js"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.13.0",
-    "soap": "^0.43.0",
-    "soap-server": "^0.1.0",
-    "uuid": "^8.3.2"
+    "soap": "^0.45.0",
+    "soap-server": "^0.1.0"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "eslint": "^8.3.0",
-    "nodemon": "latest",
-    "parallelshell": "^3.0.2",
-    "watch": "0.13.0"
+    "nodemon": "latest"
   },
-  "main": "Sources/server.js",
   "license": "ISC"
 }
